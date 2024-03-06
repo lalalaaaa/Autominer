@@ -23,7 +23,7 @@ TEST_ROUND = 1000
 TEST_TREE_ROUND = 3
 
 #训练集本地地址
-TRAIN_DATA_PATH = "D:/train_data/x-1/MCTS_output_new/"
+TRAIN_DATA_PATH = "./train_data/x-1/MCTS_output_new/"
 
 #model保存路径
 TRAIN_MODEL_PATH = "save_model/"
