@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import math
 import random
@@ -11,6 +12,12 @@ import timeit #监控各环节执行，以优化性能
 import cProfile #监控各环节执行，以优化性能
 import pickle #Python的pickle模块将数据对象序列化并保存到本地文件中
 import datetime #系统时间作为文件名，防止记录时同文件名覆盖
+
+# check if file exits, else create it
+def ensure_directory_exists(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 class State(object):
   """
@@ -453,28 +460,33 @@ def main(standard_line, simulation_round):
   if current_node.get_state().get_current_value() >= standard_line and current_node.get_state().get_current_value() < standard_line+1:
     current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 获取当前时间
     if flag_2_value_1_round < 3:
-      file_name = 'MCTS_output_new/high_value_1/self_mine_less_3/output_LSTM_data_high_value_{}_{}.pkl'.format(
-        simulation_round, current_time)
+      file_name = 'MCTS_output_new/high_value_1/self_mine_less_3/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
     if flag_2_value_1_round >= 3 and flag_2_value_1_round < 5:
       file_name = 'MCTS_output_new/high_value_1/self_mine_3_4/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
     if flag_2_value_1_round >= 5 and flag_2_value_1_round < 7:
       file_name = 'MCTS_output_new/high_value_1/self_mine_5_6/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
     if flag_2_value_1_round >= 7 and flag_2_value_1_round < 9:
       file_name = 'MCTS_output_new/high_value_1/self_mine_7_8/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
     if flag_2_value_1_round >= 9 and flag_2_value_1_round < 10:
       file_name = 'MCTS_output_new/high_value_1/self_mine_9_10/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
     if flag_2_value_1_round >= 10:
       file_name = 'MCTS_output_new/high_value_1/self_mine_more_10/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+      ensure_directory_exists(file_name)
       with open(file_name, 'wb') as file:
         pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+1 and current_node.get_state().get_current_value() < standard_line+2:
@@ -492,8 +504,8 @@ def main(standard_line, simulation_round):
       self_mine_file_name = 'self_mine_9_10/'
     if flag_2_value_1_round >= 10:
       self_mine_file_name = 'self_mine_more_10/'
-    file_name = 'MCTS_output_new/high_value_2/'+self_mine_file_name+'output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round,
-                                                                                            current_time)
+    file_name = 'MCTS_output_new/high_value_2/'+self_mine_file_name+'output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+2 and current_node.get_state().get_current_value() < standard_line+3:
@@ -511,9 +523,8 @@ def main(standard_line, simulation_round):
       self_mine_file_name = 'self_mine_9_10/'
     if flag_2_value_1_round >= 10:
       self_mine_file_name = 'self_mine_more_10/'
-    file_name = 'MCTS_output_new/high_value_3/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
-      simulation_round,
-      current_time)
+    file_name = 'MCTS_output_new/high_value_3/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+3 and current_node.get_state().get_current_value() < standard_line+4:
@@ -531,9 +542,8 @@ def main(standard_line, simulation_round):
       self_mine_file_name = 'self_mine_9_10/'
     if flag_2_value_1_round >= 10:
       self_mine_file_name = 'self_mine_more_10/'
-    file_name = 'MCTS_output_new/high_value_4/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
-      simulation_round,
-      current_time)
+    file_name = 'MCTS_output_new/high_value_4/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+4 and current_node.get_state().get_current_value() < standard_line+5:
@@ -551,9 +561,8 @@ def main(standard_line, simulation_round):
       self_mine_file_name = 'self_mine_9_10/'
     if flag_2_value_1_round >= 10:
       self_mine_file_name = 'self_mine_more_10/'
-    file_name = 'MCTS_output_new/high_value_5/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
-      simulation_round,
-      current_time)
+    file_name = 'MCTS_output_new/high_value_5/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time) 
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+5 and current_node.get_state().get_current_value() < standard_line+6:
@@ -574,6 +583,7 @@ def main(standard_line, simulation_round):
     file_name = 'MCTS_output_new/high_value_6/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
       simulation_round,
       current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+6 and current_node.get_state().get_current_value() < standard_line+7:
@@ -594,6 +604,7 @@ def main(standard_line, simulation_round):
     file_name = 'MCTS_output_new/high_value_7/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
       simulation_round,
       current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+7 and current_node.get_state().get_current_value() < standard_line+8:
@@ -614,6 +625,7 @@ def main(standard_line, simulation_round):
     file_name = 'MCTS_output_new/high_value_8/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
       simulation_round,
       current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+8 and current_node.get_state().get_current_value() < standard_line+9:
@@ -634,6 +646,7 @@ def main(standard_line, simulation_round):
     file_name = 'MCTS_output_new/high_value_9/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
       simulation_round,
       current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+9 and current_node.get_state().get_current_value() < standard_line+10:
@@ -654,11 +667,13 @@ def main(standard_line, simulation_round):
     file_name = 'MCTS_output_new/high_value_10/' + self_mine_file_name + 'output_LSTM_data_high_value_{}_{}.pkl'.format(
       simulation_round,
       current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
   elif current_node.get_state().get_current_value() >= standard_line+10:
     current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 获取当前时间
     file_name = 'MCTS_output_new/high_value_more/output_LSTM_data_high_value_{}_{}.pkl'.format(simulation_round, current_time)
+    ensure_directory_exists(file_name)
     with open(file_name, 'wb') as file:
       pickle.dump(output_LSTM_data, file)
 
