@@ -8,13 +8,13 @@ DEVICE = torch.device("cuda") if CUDA else torch.device("cpu")
 
 
 ################################MCTS相关参数################################
-SIMULATION_ROUND = 99999
+SIMULATION_ROUND = 100000000
 #MCTS单次game最大的随机树探索“深度”模拟
 MAX_ROUND_NUMBER = 15
 #MCTS树横向的随机扩展“广度”模拟
-COMPUTATION_BUDGET = 30
+COMPUTATION_BUDGET = 100
 #MCTS树纵向的扩展轮次，每次都选出一个best child进入下一轮次（此值也确定了时间步的大概长度）
-GAME_MAX_ROUND = 5
+GAME_MAX_ROUND = 7
 
 ################################神经网络相关参数################################
 #模拟次数，取平均值
@@ -40,7 +40,7 @@ START_BROADCAST_RATE = 0.5
 #block的最大index
 MAX_BLOCK = 32
 #隐藏层数量
-NUM_HIDDEN = 1
+NUM_HIDDEN = 2
 #神经网络输入的window size，即，miner能看到的local_chain和global_chain的滑动窗口的长度。
 INPUT_WINDOW_SIZE = 30
 #LSTM神经网络的时间步数
