@@ -1,0 +1,3 @@
+# Autominer
+
+Ai + blockchain.
