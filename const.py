@@ -29,7 +29,7 @@ TRAIN_DATA_PATH = "./train_data/x-1/MCTS_output_new/"
 TRAIN_MODEL_PATH = "save_model/"
 
 #epoch数量
-NUM_EPOCHS = 8
+NUM_EPOCHS = 200
 #batch size
 BATCH_SIZE = 32
 #每个epoch训练的batch数

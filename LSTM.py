@@ -25,6 +25,8 @@ output_feature_dim = LSTM_OUTPUT_FEATURE_DIM# 2 INPUT_WINDOW_SIZE actions multi-
 num_epochs = NUM_EPOCHS
 num_loader = NUM_LOADER
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class AlphaMinerModel(torch.nn.Module):
     def __init__(self):
@@ -50,6 +52,7 @@ class AlphaMinerModel(torch.nn.Module):
     def load_model(cls, path):
         model = cls()
         model.load_state_dict(torch.load(path))
+        model.to(device)
         return model
 
     def forward(self, input):
@@ -62,6 +65,7 @@ class AlphaMinerModel(torch.nn.Module):
 
         # Initialize hidden state with ones
         # constant_value = torch.tensor(0.1)
+        input = input.to(device)
         h0 = torch.zeros(NUM_HIDDEN, BATCH_SIZE, output_feature_dim).requires_grad_()
         c0 = torch.zeros(NUM_HIDDEN, BATCH_SIZE, output_feature_dim).requires_grad_()
         #for i in range(max_move):
@@ -79,7 +83,7 @@ class AlphaMinerModel(torch.nn.Module):
     def step_forward(self, input, curr_h=torch.zeros(NUM_HIDDEN, 1, output_feature_dim).requires_grad_(), curr_n=torch.zeros(NUM_HIDDEN, 1, output_feature_dim).requires_grad_()):
         with torch.no_grad():
             # Reshape the input to match LSTM's expected shape
-            input = input.view(1, 1, -1)  # (1, 1, feature_dim)
+            input = input.view(1, 1, -1).to(device)  # (1, 1, feature_dim)
             input = input.float()
             # out, (curr_h, curr_n) = self.lstm(input, (curr_h.detach(), curr_n.detach()))
             out, curr_h = self.gru(input, curr_h.detach())
@@ -95,8 +99,8 @@ class AlphaMinerModel(torch.nn.Module):
 def train_model(model, diff_learn_rate):
     #error_broadcast = nn.BCELoss(weight=, reduction='mean') #二元交叉损失熵
     #error_mine = nn.KLDivLoss(reduction='batchmean')
-    error_mine = nn.CrossEntropyLoss()
-    error_mine = nn.L1Loss()
+    error_mine = nn.CrossEntropyLoss().to(device)
+    # error_mine = nn.L1Loss()
     #统计文件夹数量
     def count_files_in_folder(folder_path):
         file_count = 0
@@ -220,14 +224,17 @@ def train_model(model, diff_learn_rate):
                         else:
                             one_batch_train_data[plane][row][col + 1] += increment
 
+                one_batch_train_data = one_batch_train_data.to(device)
+                value_to_add = value_to_add.to(device)
+
                 one_batch_train_data = torch.add(one_batch_train_data, value_to_add)
 
                 broadcast_decision, mine_decision = model(one_batch_train_data)
 
                 # 计算广播的损失权重（使用Weighted Cross Entropy Loss）：
-                weight = one_batch_broadcast_label_data
+                weight = one_batch_broadcast_label_data.to(device)
                 # 统计one_batch_broadcast_label_data中0的个数
-                count_zero = torch.sum(torch.eq(weight, 0)).item()
+                count_zero = torch.sum(torch.eq(weight, 0)).item().to(device)
                 # 统计one_batch_broadcast_label_data中1的个数
                 count_one = torch.sum(torch.eq(weight, 1)).item()
                 weight_of_1 = count_zero / (count_zero + count_one)
@@ -243,9 +250,9 @@ def train_model(model, diff_learn_rate):
                 loss_broadcast = error_broadcast(broadcast_decision, one_batch_broadcast_label_data)  # 对每一位求二分类交叉损失熵
 
                 # 计算mine的损失权重（使用Weighted Cross Entropy Loss）：
-                weight_2 = one_batch_mine_label_data
+                weight_2 = one_batch_mine_label_data.to(device)
                 # 统计one_batch_broadcast_label_data中0的个数
-                count_zero = torch.sum(torch.eq(weight_2, 0)).item()
+                count_zero = torch.sum(torch.eq(weight_2, 0)).item().to(device)
                 # 统计one_batch_broadcast_label_data中1的个数
                 count_non_zero = weight_2.numel() - count_zero
                 weight_of_non_0 = count_zero / (count_zero + count_non_zero)
@@ -285,7 +292,7 @@ def train_model(model, diff_learn_rate):
 def main(train_new_model, diff_learn_rate):
 
     if train_new_model:
-        alpha_miner = AlphaMinerModel()
+        alpha_miner = AlphaMinerModel().to(device)
     else:
         # 加载模型
         load_model_path = 'alpha_miner_12_128_20231026182749.pth'
