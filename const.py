@@ -31,7 +31,7 @@ TRAIN_MODEL_PATH = "save_model/"
 #epoch数量
 NUM_EPOCHS = 8
 #batch size
-BATCH_SIZE = 128
+BATCH_SIZE = 32
 #每个epoch训练的batch数
 NUM_LOADER = 8
 

@@ -30,16 +30,20 @@ class AlphaMinerModel(torch.nn.Module):
     def __init__(self):
         super(AlphaMinerModel, self).__init__()
         #self.embedding = torch.nn.Embedding(num_embeddings=num_embeddings, embedding_dim=embedding_dim)
-        self.lstm = torch.nn.LSTM(input_feature_dim, output_feature_dim, NUM_HIDDEN, bias=True, dropout=0.3, batch_first=True)
+        # self.lstm = torch.nn.LSTM(input_feature_dim, output_feature_dim, NUM_HIDDEN, bias=True, dropout=0.3, batch_first=True)
+        self.gru = torch.nn.GRU(input_feature_dim, output_feature_dim, NUM_HIDDEN, bias=True, dropout=0.3, batch_first=True)
+
         #self.output_hidden = torch.nn.Linear(output_feature_dim, output_feature_dim, bias=True)
         self.output_broadcast = torch.nn.Linear(output_feature_dim, MAX_BLOCK, bias=True)
         self.output_mine = torch.nn.Linear(output_feature_dim, MAX_BLOCK, bias=True)
 
     def get_param_num(self):
-        num_lstm_params = sum(p.numel() for p in self.lstm.parameters())
+        # num_lstm_params = sum(p.numel() for p in self.lstm.parameters())
+        num_gru_params = sum(p.numel() for p in self.gru.parameters())
         num_brd_params = sum(p.numel() for p in self.output_broadcast.parameters())
         num_mine_params = sum(p.numel() for p in self.output_mine.parameters())
-        num_param = num_lstm_params+num_brd_params+num_mine_params
+        # num_param = num_lstm_params+num_brd_params+num_mine_params
+        num_param = num_gru_params+num_brd_params+num_mine_params
         return num_param
 
     @classmethod
@@ -61,7 +65,9 @@ class AlphaMinerModel(torch.nn.Module):
         h0 = torch.zeros(NUM_HIDDEN, BATCH_SIZE, output_feature_dim).requires_grad_()
         c0 = torch.zeros(NUM_HIDDEN, BATCH_SIZE, output_feature_dim).requires_grad_()
         #for i in range(max_move):
-        out, (hn, cn) = self.lstm(input, (h0.detach(), c0.detach()))
+        # out, (hn, cn) = self.lstm(input, (h0.detach(), c0.detach()))
+        out, hn = self.gru(input, h0.detach())
+
         #out = self.output_hidden(out) #add one hidden linear layer
         broadcast_decision = self.output_broadcast(out)
         broadcast_decision = torch.sigmoid(broadcast_decision)
@@ -75,7 +81,9 @@ class AlphaMinerModel(torch.nn.Module):
             # Reshape the input to match LSTM's expected shape
             input = input.view(1, 1, -1)  # (1, 1, feature_dim)
             input = input.float()
-            out, (curr_h, curr_n) = self.lstm(input, (curr_h.detach(), curr_n.detach()))
+            # out, (curr_h, curr_n) = self.lstm(input, (curr_h.detach(), curr_n.detach()))
+            out, curr_h = self.gru(input, curr_h.detach())
+
             #out = self.output_hidden(out)  # add one hidden linear layer
             broadcast_decision = self.output_broadcast(out)
             broadcast_decision = torch.sigmoid(broadcast_decision) #真正的广播序号化（int）会在test.py中进行处理，具体见multi_hot_to_broadcast函数。
@@ -261,6 +269,17 @@ def train_model(model, diff_learn_rate):
                 print("     broadcast loss: {}".format(loss_broadcast.data.item()))
                 print("     mine loss: {}".format(loss_mine.data.item()))
 
+                # 在你的训练循环外部定义文件路径
+                loss_file_path = "training_loss.txt"
+
+                # 在训练循环内，每次计算完损失后：
+                with open(loss_file_path, 'a') as file:
+                    file.write("Epoch: {} - Batch: {} ... \n".format(epoch, loader))
+                    file.write("     Total Loss: {} \n".format(loss.data.item()))
+                    file.write("     Broadcast Loss: {} \n".format(loss_broadcast.data.item()))
+                    file.write("     Mine Loss: {} \n\n".format(loss_mine.data.item()))
+
+
         # print accuracy...
 
 def main(train_new_model, diff_learn_rate):
@@ -285,5 +304,5 @@ def main(train_new_model, diff_learn_rate):
     #测试模型性能
 
 if __name__ == "__main__":
-    main(train_new_model = False, diff_learn_rate = False)
+    main(train_new_model = True, diff_learn_rate = False)
 
